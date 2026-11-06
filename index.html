@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoxelCraft — Browser Block World</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="game"></div>
+
+  <section id="avatar-panel">
+    <div class="panel-label">PLAYER</div>
+    <div id="avatar">
+      <div class="avatar-shadow"></div>
+      <div class="avatar-body">
+        <div class="shirt"></div>
+      </div>
+      <div class="avatar-head">
+        <div class="hair"></div>
+        <div class="eyes"><i></i><i></i></div>
+      </div>
+      <div class="avatar-arm left"></div>
+      <div class="avatar-arm right"></div>
+      <div class="avatar-leg left"></div>
+      <div class="avatar-leg right"></div>
+    </div>
+    <div class="avatar-name">PLAYER 01</div>
+  </section>
+
+  <div id="crosshair"><span></span><span></span></div>
+  <div id="hand">
+    <div class="sleeve"></div>
+    <div class="hand-skin"></div>
+  </div>
+  <div id="top-hint">CLICK TO PLAY <b>WASD</b> MOVE · <b>SPACE</b> JUMP · <b>LEFT CLICK</b> MINE · <b>RIGHT CLICK</b>
+    PLACE · <b>E</b> CRAFT</div>
+  <div id="hotbar"></div>
+
+  <section id="crafting" class="hidden">
+    <div class="craft-window">
+      <header>
+        <div><small>VOXELCRAFT</small>
+          <h2>Crafting</h2>
+        </div><button id="close-craft" aria-label="Close">×</button>
+      </header>
+      <div class="craft-content">
+
+        <!-- LEFT: PLAYER PREVIEW -->
+        <div class="craft-player">
+          <div class="big-avatar">
+            <div class="big-head"></div>
+            <div class="big-torso"></div>
+            <div class="big-arm a"></div>
+            <div class="big-arm b"></div>
+            <div class="big-leg c"></div>
+            <div class="big-leg d"></div>
+          </div>
+          <p>YOUR CHARACTER</p>
+          <small>Move your mouse to look around</small>
+        </div>
+
+        <!-- RIGHT: CRAFTING AND INVENTORY -->
+        <div class="craft-right">
+
+          <div class="craft-grid-section">
+            <h3>Crafting</h3>
+            <div class="craft-grid-layout">
+              <div id="craft-grid">
+                <div class="craft-slot" data-craft-slot="0"></div>
+                <div class="craft-slot" data-craft-slot="1"></div>
+                <div class="craft-slot" data-craft-slot="2"></div>
+                <div class="craft-slot" data-craft-slot="3"></div>
+              </div>
+
+              <div class="craft-arrow">➜</div>
+
+              <div id="craft-result" class="craft-slot"></div>
+            </div>
+          </div>
+
+          <div class="inventory-section">
+            <h3>Inventory</h3>
+            <div id="inventory-grid" class="inventory-grid"></div>
+
+            <h3 class="inventory-hotbar-title">Hotbar</h3>
+            <div id="inventory-hotbar" class="inventory-grid hotbar-grid"></div>
+          </div>
+
+          <div class="craft-recipes">
+            <h3>Quick crafting</h3>
+
+            <div class="recipe">
+              <span class="recipe-icon wood-icon"></span>
+              <div><b>Wood Planks</b><small>1 Wood → 4 Planks</small></div>
+              <button data-recipe="planks">CRAFT</button>
+            </div>
+
+            <div class="recipe">
+              <span class="recipe-icon brick-icon"></span>
+              <div><b>Stone Bricks</b><small>4 Stone → 4 Bricks</small></div>
+              <button data-recipe="bricks">CRAFT</button>
+            </div>
+
+            <div class="recipe">
+              <span class="recipe-icon tnt-icon"></span>
+              <div><b>TNT</b><small>2 Sand + 2 Wood → 1 TNT</small></div>
+              <button data-recipe="tnt">CRAFT</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast"></div>
+  <script type="module" src="game.js"></script>
+</body>
+
+</html>
