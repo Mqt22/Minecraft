@@ -31,10 +31,6 @@
   </section>
 
   <div id="crosshair"><span></span><span></span></div>
-  <div id="hand">
-    <div class="sleeve"></div>
-    <div class="hand-skin"></div>
-  </div>
   <div id="top-hint">CLICK TO PLAY <b>WASD</b> MOVE · <b>SPACE</b> JUMP · <b>LEFT CLICK</b> MINE · <b>RIGHT CLICK</b>
     PLACE · <b>E</b> CRAFT</div>
   <div id="hotbar"></div>
@@ -48,25 +44,39 @@
       </header>
       <div class="craft-content">
 
-        <!-- LEFT: PLAYER PREVIEW -->
-        <div class="craft-player">
-          <div class="big-avatar">
-            <div class="big-head"></div>
-            <div class="big-torso"></div>
-            <div class="big-arm a"></div>
-            <div class="big-arm b"></div>
-            <div class="big-leg c"></div>
-            <div class="big-leg d"></div>
+        <!-- TOP ROW: PLAYER + CRAFTING -->
+        <div class="craft-top">
+
+          <!-- LEFT: ARMOR + PLAYER -->
+          <div class="craft-player">
+            <div class="player-preview-layout">
+
+              <div class="armor-slots">
+                <div class="armor-slot" title="Helmet">HEAD</div>
+                <div class="armor-slot" title="Chestplate">CHEST</div>
+                <div class="armor-slot" title="Leggings">LEGS</div>
+                <div class="armor-slot" title="Boots">FEET</div>
+              </div>
+
+              <div class="player-preview">
+                <div class="avatar-frame">
+                  <div class="big-avatar">
+                    <div class="big-head"></div>
+                    <div class="big-torso"></div>
+                    <div class="big-arm a"></div>
+                    <div class="big-arm b"></div>
+                    <div class="big-leg c"></div>
+                    <div class="big-leg d"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
-          <p>YOUR CHARACTER</p>
-          <small>Move your mouse to look around</small>
-        </div>
 
-        <!-- RIGHT: CRAFTING AND INVENTORY -->
-        <div class="craft-right">
-
+          <!-- RIGHT: CRAFTING -->
           <div class="craft-grid-section">
-            <h3>Crafting</h3>
+
             <div class="craft-grid-layout">
               <div id="craft-grid">
                 <div class="craft-slot" data-craft-slot="0"></div>
@@ -81,38 +91,22 @@
             </div>
           </div>
 
-          <div class="inventory-section">
-            <h3>Inventory</h3>
-            <div id="inventory-grid" class="inventory-grid"></div>
-
-            <h3 class="inventory-hotbar-title">Hotbar</h3>
-            <div id="inventory-hotbar" class="inventory-grid hotbar-grid"></div>
-          </div>
-
-          <div class="craft-recipes">
-            <h3>Quick crafting</h3>
-
-            <div class="recipe">
-              <span class="recipe-icon wood-icon"></span>
-              <div><b>Wood Planks</b><small>1 Wood → 4 Planks</small></div>
-              <button data-recipe="planks">CRAFT</button>
-            </div>
-
-            <div class="recipe">
-              <span class="recipe-icon brick-icon"></span>
-              <div><b>Stone Bricks</b><small>4 Stone → 4 Bricks</small></div>
-              <button data-recipe="bricks">CRAFT</button>
-            </div>
-
-            <div class="recipe">
-              <span class="recipe-icon tnt-icon"></span>
-              <div><b>TNT</b><small>2 Sand + 2 Wood → 1 TNT</small></div>
-              <button data-recipe="tnt">CRAFT</button>
-            </div>
-          </div>
-
         </div>
+
       </div>
+
+      <!-- BOTTOM ROW: 36 INVENTORY SLOTS + 9 HOTBAR SLOTS -->
+      <div class="inventory-section">
+
+        <h3>Inventory</h3>
+        <div id="inventory-grid" class="inventory-grid"></div>
+
+        <h3 class="inventory-hotbar-title">Hotbar</h3>
+        <div id="inventory-hotbar" class="inventory-grid hotbar-grid"></div>
+
+      </div>
+
+    </div>
     </div>
   </section>
 

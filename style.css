@@ -1,5 +1,9 @@
+/* ==========================================
+   VOXELCRAFT - COMPLETE STYLESHEET
+========================================== */
+
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 html,
@@ -8,18 +12,22 @@ body,
     width: 100%;
     height: 100%;
     margin: 0;
-    overflow: hidden
+    overflow: hidden;
 }
 
 body {
     font-family: Inter, system-ui, Arial, sans-serif;
     background: #9bc9e8;
-    color: #fff
+    color: #fff;
 }
 
 canvas {
-    display: block
+    display: block;
 }
+
+/* ==========================================
+   PLAYER AVATAR PANEL
+========================================== */
 
 #avatar-panel {
     position: fixed;
@@ -34,28 +42,28 @@ canvas {
     border-radius: 9px;
     backdrop-filter: blur(8px);
     text-align: center;
-    pointer-events: none
+    pointer-events: none;
 }
 
 .panel-label {
     font-size: 9px;
     letter-spacing: 2px;
     color: #b9c8d2;
-    font-weight: 800
+    font-weight: 800;
 }
 
 .avatar-name {
     font-size: 9px;
     letter-spacing: 1.5px;
     color: #dbe7ee;
-    margin-top: 4px
+    margin-top: 4px;
 }
 
 #avatar {
     height: 126px;
     position: relative;
     width: 100%;
-    transform-style: preserve-3d
+    transform-style: preserve-3d;
 }
 
 .avatar-head {
@@ -72,20 +80,20 @@ canvas {
 .hair {
     height: 10px;
     background: #38291f;
-    border-bottom: 2px solid #241a14
+    border-bottom: 2px solid #241a14;
 }
 
 .eyes {
     display: flex;
     justify-content: space-around;
-    margin: 9px 5px
+    margin: 9px 5px;
 }
 
 .eyes i {
     width: 5px;
     height: 5px;
     background: #242b30;
-    display: block
+    display: block;
 }
 
 .avatar-body {
@@ -100,7 +108,7 @@ canvas {
 
 .shirt {
     height: 100%;
-    background: linear-gradient(90deg, #438bb9, #28658e)
+    background: linear-gradient(90deg, #438bb9, #28658e);
 }
 
 .avatar-arm {
@@ -110,15 +118,15 @@ canvas {
     height: 42px;
     background: #dca477;
     border: 2px solid #80583d;
-    z-index: 2
+    z-index: 2;
 }
 
 .avatar-arm.left {
-    left: 23px
+    left: 23px;
 }
 
 .avatar-arm.right {
-    right: 22px
+    right: 22px;
 }
 
 .avatar-leg {
@@ -127,15 +135,15 @@ canvas {
     width: 20px;
     height: 25px;
     background: #334454;
-    border: 2px solid #202d38
+    border: 2px solid #202d38;
 }
 
 .avatar-leg.left {
-    left: 39px
+    left: 39px;
 }
 
 .avatar-leg.right {
-    right: 38px
+    right: 38px;
 }
 
 .avatar-shadow {
@@ -145,8 +153,12 @@ canvas {
     width: 78px;
     height: 12px;
     background: #0005;
-    border-radius: 50%
+    border-radius: 50%;
 }
+
+/* ==========================================
+   CROSSHAIR
+========================================== */
 
 #crosshair {
     position: fixed;
@@ -156,7 +168,7 @@ canvas {
     width: 18px;
     height: 18px;
     transform: translate(-50%, -50%);
-    pointer-events: none
+    pointer-events: none;
 }
 
 #crosshair span {
@@ -165,15 +177,19 @@ canvas {
     box-shadow: 0 1px 3px #000;
     width: 2px;
     height: 18px;
-    left: 8px
+    left: 8px;
 }
 
 #crosshair span+span {
     width: 18px;
     height: 2px;
     left: 0;
-    top: 8px
+    top: 8px;
 }
+
+/* ==========================================
+   FIRST PERSON HAND
+========================================== */
 
 #hand {
     position: fixed;
@@ -185,7 +201,7 @@ canvas {
     transform: rotate(-13deg);
     transform-origin: bottom center;
     pointer-events: none;
-    filter: drop-shadow(4px 7px 5px #0005)
+    filter: drop-shadow(4px 7px 5px #0005);
 }
 
 #hand .sleeve {
@@ -195,7 +211,7 @@ canvas {
     width: 78px;
     height: 132px;
     background: linear-gradient(90deg, #245879, #397fa8);
-    clip-path: polygon(12% 0, 100% 8%, 82% 100%, 0 100%)
+    clip-path: polygon(12% 0, 100% 8%, 82% 100%, 0 100%);
 }
 
 #hand .hand-skin {
@@ -207,18 +223,22 @@ canvas {
     background: #d99e70;
     border: 3px solid #9a684a;
     border-radius: 15px 17px 9px 9px;
-    transform: rotate(7deg)
+    transform: rotate(7deg);
 }
 
 #hand.swing {
-    animation: swing .22s ease
+    animation: swing .22s ease;
 }
 
 @keyframes swing {
     50% {
-        transform: rotate(18deg) translateY(16px)
+        transform: rotate(18deg) translateY(16px);
     }
 }
+
+/* ==========================================
+   TOP HINT
+========================================== */
 
 #top-hint {
     position: fixed;
@@ -233,12 +253,16 @@ canvas {
     font-size: 10px;
     letter-spacing: .5px;
     color: #dbe7ee;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 #top-hint b {
-    color: #fff
+    color: #fff;
 }
+
+/* ==========================================
+   WORLD HOTBAR
+========================================== */
 
 #hotbar {
     position: fixed;
@@ -247,28 +271,32 @@ canvas {
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    justify-content: center;
     gap: 5px;
     padding: 7px;
+    max-width: 95vw;
     background: #101820b9;
     border: 1px solid #ffffff66;
-    border-radius: 8px
+    border-radius: 8px;
 }
 
 .slot {
     width: 58px;
     height: 58px;
+    min-width: 0;
+    flex: 1 1 0;
     border: 2px solid #ffffff55;
     border-radius: 5px;
     background: #26333dc9;
     display: grid;
     place-items: center;
     position: relative;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .slot.selected {
     border: 3px solid #fff;
-    box-shadow: 0 0 0 2px #e4b94f
+    box-shadow: 0 0 0 2px #e4b94f;
 }
 
 .slot .number {
@@ -276,63 +304,92 @@ canvas {
     top: 2px;
     left: 5px;
     font-size: 10px;
-    color: #e9f0f4
+    color: #e9f0f4;
 }
 
 .block-preview {
     width: 27px;
     height: 27px;
     border: 2px solid #0005;
-    box-shadow: inset -5px -5px #0002, inset 4px 4px #fff2
+    box-shadow: inset -5px -5px #0002, inset 4px 4px #fff2;
 }
 
 .slot .block-name {
     position: absolute;
     bottom: 2px;
     font-size: 8px;
-    color: #e5edf2
+    color: #e5edf2;
 }
+
+.slot .block-count {
+    position: absolute;
+    bottom: 3px;
+    right: 5px;
+    font-size: 13px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 2px 2px 2px #000;
+    z-index: 2;
+}
+
+/* ==========================================
+   CRAFTING OVERLAY
+========================================== */
 
 #crafting {
     position: fixed;
     inset: 0;
     z-index: 10;
-    background: #080d12b9;
+    background: rgba(8, 13, 18, .82);
     display: grid;
     place-items: center;
-    backdrop-filter: blur(4px)
+    padding: 12px;
+    overflow: hidden;
 }
 
 .hidden {
-    display: none !important
+    display: none !important;
 }
 
+/* ==========================================
+   MAIN INVENTORY WINDOW
+========================================== */
+
 .craft-window {
-    width: min(690px, 92vw);
+    width: min(1000px, 96vw);
+    height: min(760px, 94dvh);
+    max-height: 94dvh;
+    padding: clamp(10px, 1.5vw, 20px);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
     background: #202b34;
     border: 2px solid #71818b;
     border-radius: 12px;
     box-shadow: 0 22px 80px #0009;
-    padding: 22px
 }
 
 .craft-window header {
+    flex: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #ffffff24;
-    padding-bottom: 14px
+    padding-bottom: 12px;
 }
 
 .craft-window header small {
     color: #8eb2c6;
     letter-spacing: 2px;
-    font-size: 9px
+    font-size: 9px;
 }
 
 .craft-window h2 {
     margin: 3px 0 0;
-    font-size: 25px
+    font-size: clamp(20px, 3vw, 25px);
 }
 
 .craft-window header button {
@@ -343,103 +400,355 @@ canvas {
     font-size: 25px;
     width: 36px;
     height: 36px;
-    cursor: pointer
+    cursor: pointer;
 }
+
+/* ==========================================
+   INVENTORY CONTENT
+========================================== */
 
 .craft-content {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 25px;
-    padding-top: 20px
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding-top: 12px;
+    overflow: hidden;
 }
 
-.craft-player {
+/* ==========================================
+   TOP TWO PANELS
+   PLAYER LEFT - CRAFTING RIGHT
+========================================== */
+
+.craft-top {
+    width: 100%;
+    flex: 0 0 clamp(140px, 25vh, 205px);
+    min-height: 0;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+}
+
+.craft-player,
+.craft-grid-section {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 12px;
+    overflow: hidden;
+
     background: #172129;
     border: 1px solid #ffffff20;
-    border-radius: 8px;
-    min-height: 260px;
+    border-radius: 9px;
+}
+
+/* ==========================================
+   PLAYER PREVIEW - DESKTOP FIX
+========================================== */
+
+.craft-player {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 10px 10px 10px 0;
+}
+
+.player-preview-layout {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 8px;
+    align-items: stretch;
+}
+
+.armor-slots {
+    width: 42px;
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+}
+
+.armor-slots {
+    width: 100%;
+    height: 90%;
+    min-height: 0;
+
+    display: grid;
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.armor-slot {
+    min-width: 0;
+    min-height: 0;
+
+    display: grid;
+    place-items: center;
+
+    background: #34434d;
+    border: 2px solid #71818b;
+    border-radius: 4px;
+
+    color: #c4d1d9;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.player-preview {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+
     display: flex;
-    align-items: center;
     flex-direction: column;
-    justify-content: center
+    align-items: center;
+    justify-content: center;
+
+    overflow: visible;
 }
 
-.big-avatar {
-    width: 110px;
-    height: 175px;
+.avatar-frame {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+
+    display: grid;
+    place-items: center;
+
+    overflow: visible;
+}
+
+.avatar-frame .big-avatar {
     position: relative;
-    transition: transform 0.12s ease-out;
-    transform-style: preserve-3d;
+    width: 80px;
+    height: 175px;
+    flex: none;
+    transform: scale(.60);
+    transform-origin: center center;
 }
 
-.big-head {
-    position: absolute;
-    top: 0;
-    left: 34px;
-    width: 44px;
-    height: 48px;
-    background: #dca477;
-    border: 4px solid #513626
-}
-
-.big-torso {
-    position: absolute;
-    top: 48px;
-    left: 23px;
-    width: 66px;
-    height: 67px;
-    background: #347ca7;
-    border: 4px solid #1c4a67
-}
-
-.big-arm {
-    position: absolute;
-    top: 51px;
-    width: 19px;
-    height: 67px;
-    background: #dca477;
-    border: 3px solid #80583d
-}
-
-.big-arm.a {
-    left: 4px
-}
-
-.big-arm.b {
-    right: 4px
-}
-
-.big-leg {
-    position: absolute;
-    top: 115px;
-    width: 27px;
-    height: 57px;
-    background: #334454;
-    border: 3px solid #202d38
-}
-
-.big-leg.c {
-    left: 25px
-}
-
-.big-leg.d {
-    right: 25px
-}
-
-.craft-player p {
+.player-preview p {
+    flex: none;
+    margin: 2px 0;
     font-size: 10px;
     letter-spacing: 1.5px;
-    margin: 4px
+    text-align: center;
 }
 
-.craft-player small {
+.player-preview small {
+    flex: none;
     font-size: 9px;
-    color: #8fa2ae
+    color: #8fa2ae;
+    text-align: center;
+}
+
+/* ==========================================
+   CRAFTING PANEL
+========================================== */
+
+.craft-grid-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.craft-grid-section h3 {
+    margin: 0 0 12px;
+    font-size: clamp(12px, 1.5vw, 16px);
+}
+
+.craft-grid-layout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(5px, 1.5vw, 18px);
+}
+
+#craft-grid {
+    display: grid;
+    grid-template-columns: repeat(2, clamp(28px, 5vw, 48px));
+    gap: 4px;
+}
+
+.craft-slot {
+    width: clamp(28px, 5vw, 48px);
+    height: clamp(28px, 5vw, 48px);
+    min-width: 0;
+    flex: none;
+
+    background: #34434d;
+    border: 2px solid #71818b;
+    box-shadow: inset 2px 2px #ffffff12, inset -2px -2px #0005;
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.craft-slot:hover,
+.inventory-slot:hover {
+    border-color: white;
+}
+
+.craft-arrow {
+    font-size: clamp(16px, 2.5vw, 26px);
+    color: #d5a844;
+}
+
+/* ==========================================
+   INVENTORY GRID
+========================================== */
+
+.inventory-section {
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    margin: 0;
+    padding: clamp(6px, 1vw, 12px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #172129;
+    border: 1px solid #ffffff20;
+    border-radius: 9px;
+}
+
+.inventory-section h3 {
+    flex: none;
+    margin: 0 0 8px;
+    font-size: clamp(10px, 1.3vw, 14px);
+}
+
+/* 9 COLUMNS - 4 ROWS */
+
+#inventory-grid {
+    width: min(100%, 650px);
+    margin-left: auto;
+    margin-right: auto;
+
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: clamp(2px, .5vw, 5px);
+}
+
+/* 9 INVENTORY HOTBAR SLOTS */
+
+#inventory-hotbar {
+    width: min(100%, 650px);
+    margin-left: auto;
+    margin-right: auto;
+
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: clamp(2px, .5vw, 5px);
+}
+
+/* INVENTORY SLOT */
+
+.inventory-slot {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    aspect-ratio: 1 / 1;
+
+    position: relative;
+    display: grid;
+    place-items: center;
+
+    background: #34434d;
+    border: 2px solid #71818b;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.inventory-slot:hover {
+    border-color: white;
+    outline: 1px solid white;
+    outline-offset: -3px;
+}
+
+.inventory-slot.active {
+    border-color: #e4b94f;
+    box-shadow: 0 0 0 1px #e4b94f;
+}
+
+/* ITEM ICONS */
+
+.inventory-slot .item-icon,
+.inventory-slot .block-preview {
+    width: 55%;
+    height: 55%;
+    border: 1px solid #0005;
+    box-shadow: inset -4px -4px #0002, inset 3px 3px #fff2;
+}
+
+/* ITEM COUNTERS */
+
+.inventory-slot .item-count,
+.inventory-slot .block-count {
+    position: absolute;
+    bottom: 1px;
+    right: 3px;
+
+    font-size: clamp(7px, 1vw, 11px);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 2px 2px 2px #000;
+    z-index: 2;
+}
+
+/* ITEM LABEL */
+
+.inventory-slot .item-name {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: clamp(5px, .7vw, 7px);
+    color: #dbe7ee;
+}
+
+/* INVENTORY HOTBAR HEADING */
+
+.inventory-hotbar-title {
+    margin-top: 10px !important;
+}
+
+.hotbar-grid {
+    margin-top: 5px;
+}
+
+/* ==========================================
+   RECIPE STYLES
+========================================== */
+
+.craft-recipes {
+    margin-top: 14px;
 }
 
 .craft-recipes h3 {
     margin: 0 0 12px;
-    font-size: 15px
+    font-size: 15px;
 }
 
 .recipe {
@@ -450,42 +759,49 @@ canvas {
     margin-bottom: 9px;
     background: #2b3943;
     border: 1px solid #ffffff17;
-    border-radius: 7px
+    border-radius: 7px;
 }
 
 .recipe-icon {
     width: 35px;
     height: 35px;
     flex: none;
-    border: 2px solid #0005
+    border: 2px solid #0005;
 }
 
 .wood-icon {
-    background: repeating-linear-gradient(90deg, #8b5a32 0 7px, #a87542 7px 13px)
+    background: repeating-linear-gradient(90deg,
+            #8b5a32 0 7px,
+            #a87542 7px 13px);
 }
 
 .brick-icon {
-    background: repeating-linear-gradient(0deg, #8b9295 0 7px, #626d73 7px 13px)
+    background: repeating-linear-gradient(0deg,
+            #8b9295 0 7px,
+            #626d73 7px 13px);
 }
 
 .tnt-icon {
-    background: linear-gradient(#d94836 0 38%, #eee 38% 63%, #d94836 63%)
+    background: linear-gradient(#d94836 0 38%,
+            #eee 38% 63%,
+            #d94836 63%);
 }
 
 .recipe div {
-    flex: 1
+    flex: 1;
+    min-width: 0;
 }
 
 .recipe b {
     display: block;
-    font-size: 12px
+    font-size: 12px;
 }
 
 .recipe small {
     display: block;
     color: #aab9c2;
     font-size: 10px;
-    margin-top: 3px
+    margin-top: 3px;
 }
 
 .recipe button {
@@ -496,14 +812,18 @@ canvas {
     padding: 8px 10px;
     font-size: 9px;
     font-weight: 900;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .craft-recipes>p {
     font-size: 10px;
     color: #aab9c2;
-    line-height: 1.5
+    line-height: 1.5;
 }
+
+/* ==========================================
+   TOAST
+========================================== */
 
 #toast {
     position: fixed;
@@ -518,15 +838,20 @@ canvas {
     opacity: 0;
     transition: .2s;
     pointer-events: none;
-    font-size: 12px
+    font-size: 12px;
 }
 
 #toast.show {
     opacity: 1;
-    transform: translate(-50%, 0)
+    transform: translate(-50%, 0);
 }
 
-@media(max-width:650px) {
+/* ==========================================
+   TABLET RESPONSIVENESS
+========================================== */
+
+@media (max-width: 650px) {
+
     #top-hint {
         top: auto;
         bottom: 105px;
@@ -534,239 +859,829 @@ canvas {
         white-space: normal;
         text-align: center;
         line-height: 1.6;
-        font-size: 9px
+        font-size: 9px;
     }
 
     #avatar-panel {
         transform: scale(.8);
         transform-origin: top left;
         top: 8px;
-        left: 8px
+        left: 8px;
     }
 
-    .slot {
-        width: 48px;
-        height: 52px
+    #hotbar {
+        bottom: 12px;
+        gap: 3px;
+        padding: 5px;
+        width: min(95vw, 500px);
     }
 
-    .craft-content {
-        grid-template-columns: 1fr 1.5fr;
-        gap: 10px
+    #hotbar .slot {
+        width: auto;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        min-width: 0;
     }
 
     .craft-window {
-        padding: 14px
+        width: 98vw;
+        height: 95dvh;
+        max-height: 95dvh;
+        padding: 9px;
     }
 
-    .craft-player {
-        min-height: 220px
+    .craft-content {
+        gap: 8px;
+        padding-top: 8px;
     }
 
-    .recipe {
+    .craft-top {
+        flex-basis: 155px;
         gap: 7px;
-        padding: 8px
     }
 
-    .recipe button {
-        padding: 7px 6px
-    }
-}
-
-/* CRAFTING WINDOW */
-.craft-window {
-    width: min(850px, 95vw);
-    max-height: 92vh;
-    overflow-y: auto;
-}
-
-.craft-content {
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    gap: 20px;
-    padding-top: 20px;
-    align-items: start;
-}
-
-.craft-player {
-    min-height: 280px;
-    perspective: 600px;
-}
-
-.big-avatar {
-    transform-style: preserve-3d;
-    transform-origin: center center;
-    transition: transform 0.12s ease-out;
-}
-
-.craft-right {
-    min-width: 0;
-}
-
-.craft-right h3 {
-    margin: 0 0 10px;
-    font-size: 13px;
-}
-
-.craft-grid-section {
-    padding: 13px;
-    background: #172129;
-    border: 1px solid #ffffff20;
-    border-radius: 8px;
-    margin-bottom: 14px;
-}
-
-.craft-grid-layout {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-#craft-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 48px);
-    gap: 5px;
-}
-
-.craft-slot {
-    width: 48px;
-    height: 48px;
-    background: #34434d;
-    border: 2px solid #71818b;
-    box-shadow: inset 2px 2px #ffffff12, inset -2px -2px #0005;
-    position: relative;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-}
-
-.craft-slot:hover,
-.inventory-slot:hover {
-    border-color: white;
-}
-
-.craft-arrow {
-    font-size: 26px;
-    color: #d5a844;
-}
-
-.inventory-section {
-    padding: 13px;
-    background: #172129;
-    border: 1px solid #ffffff20;
-    border-radius: 8px;
-    margin-bottom: 14px;
-}
-
-.inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(9, minmax(0, 1fr));
-    gap: 4px;
-}
-
-.inventory-slot {
-    min-width: 0;
-    aspect-ratio: 1;
-    background: #34434d;
-    border: 2px solid #71818b;
-    position: relative;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-}
-
-.inventory-slot .item-icon {
-    width: 55%;
-    height: 55%;
-    border: 1px solid #0005;
-    box-shadow: inset -4px -4px #0002, inset 3px 3px #fff2;
-}
-
-.inventory-slot .item-count {
-    position: absolute;
-    bottom: 1px;
-    right: 3px;
-    font-size: 10px;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px black;
-}
-
-.inventory-slot .item-name {
-    position: absolute;
-    top: 2px;
-    left: 3px;
-    font-size: 7px;
-    color: #dbe7ee;
-}
-
-.inventory-hotbar-title {
-    margin-top: 13px !important;
-}
-
-.hotbar-grid {
-    margin-top: 8px;
-}
-
-.inventory-slot.active {
-    border-color: #e4b94f;
-    box-shadow: 0 0 0 1px #e4b94f;
-}
-
-.craft-recipes {
-    margin-top: 14px;
-}
-
-@media (max-width: 650px) {
-    .craft-window {
-        padding: 12px;
+    .craft-player,
+    .craft-grid-section {
+        padding: 6px;
     }
 
-    .craft-content {
-        grid-template-columns: 1fr;
-        gap: 12px;
+    .player-preview-layout {
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 4px;
     }
 
-    .craft-player {
-        min-height: 190px;
+    .armor-slots {
+        gap: 4px;
     }
 
-    .big-avatar {
-        transform: scale(.8);
+    .armor-slot {
+        border-width: 1px;
+        font-size: 6px;
     }
 
-    .inventory-grid {
+    .avatar-frame .big-avatar {
+        transform: scale(.62);
+    }
+
+    .player-preview p {
+        font-size: 7px;
+    }
+
+    .player-preview small {
+        display: none;
+    }
+
+    .craft-grid-section h3 {
+        font-size: 12px;
+        margin-bottom: 7px;
+    }
+
+    .craft-grid-layout {
+        gap: 4px;
+    }
+
+    #craft-grid {
+        grid-template-columns: repeat(2, 30px);
         gap: 3px;
     }
 
     .craft-slot {
-        width: 42px;
-        height: 42px;
+        width: 30px;
+        height: 30px;
     }
 
-    .inventory-slot .item-count {
+    .craft-arrow {
+        font-size: 16px;
+    }
+
+    .inventory-section {
+        padding: 5px;
+    }
+
+    #inventory-grid,
+    #inventory-hotbar {
+        gap: 2px;
+    }
+
+    .inventory-slot {
+        border-width: 1px;
+    }
+
+    .inventory-slot .item-count,
+    .inventory-slot .block-count {
+        font-size: 7px;
+    }
+
+    .recipe {
+        gap: 7px;
+        padding: 8px;
+    }
+
+    .recipe button {
+        padding: 7px 6px;
+    }
+}
+
+/* ==========================================
+   SMALL MOBILE SCREENS
+========================================== */
+
+@media (max-width: 380px) {
+
+    #avatar-panel {
+        transform: scale(.65);
+    }
+
+    #top-hint {
         font-size: 8px;
+        bottom: 95px;
+    }
+
+    #hotbar {
+        width: 97vw;
+        gap: 2px;
+        padding: 4px;
+    }
+
+    .slot .number {
+        font-size: 8px;
+        left: 3px;
+    }
+
+    .slot .block-name {
+        font-size: 6px;
+    }
+
+    .slot .block-count {
+        font-size: 9px;
+        right: 2px;
+    }
+
+    .block-preview {
+        width: 65%;
+        height: 65%;
+    }
+
+    .craft-window {
+        width: 99vw;
+        padding: 6px;
+    }
+
+    .craft-top {
+        flex-basis: 135px;
+        gap: 5px;
+    }
+
+    .player-preview-layout {
+        grid-template-columns: 27px minmax(0, 1fr);
+        gap: 3px;
+    }
+
+    .armor-slot {
+        font-size: 5px;
+    }
+
+    .avatar-frame .big-avatar {
+        transform: scale(.52);
+    }
+
+    .craft-grid-section h3 {
+        font-size: 10px;
+    }
+
+    #craft-grid {
+        grid-template-columns: repeat(2, 25px);
+        gap: 2px;
+    }
+
+    .craft-slot {
+        width: 25px;
+        height: 25px;
+    }
+
+    .craft-arrow {
+        font-size: 13px;
+    }
+
+    .inventory-section h3 {
+        font-size: 9px;
+        margin-bottom: 5px;
+    }
+
+    .inventory-hotbar-title {
+        margin-top: 6px !important;
+    }
+
+    .inventory-slot .item-count,
+    .inventory-slot .block-count {
+        font-size: 6px;
     }
 }
-/* HOTBAR BLOCK COUNTER */
 
-.slot .block-count {
-    position: absolute;
-    bottom: 3px;
-    right: 5px;
-    font-size: 13px;
-    font-weight: 900;
-    color: #fff;
-    text-shadow: 2px 2px 2px #000;
-    z-index: 2;
+/* ==========================================
+   SHORT SCREEN RESPONSIVENESS
+========================================== */
+
+@media (max-height: 600px) {
+
+    .craft-window {
+        height: 97dvh;
+        max-height: 97dvh;
+    }
+
+    .craft-content {
+        gap: 5px;
+        padding-top: 5px;
+    }
+
+    .craft-top {
+        flex-basis: 115px;
+    }
+
+    .craft-player,
+    .craft-grid-section {
+        padding: 5px;
+    }
+
+    .avatar-frame {
+        height: auto;
+        min-height: 175px;
+        flex: 1;
+        overflow: visible;
+    }
+
+    .avatar-frame .big-avatar {
+        transform: scale(.85);
+    }
+
+    .player-preview small {
+        display: none;
+    }
+
+    .craft-grid-section h3 {
+        margin-bottom: 5px;
+    }
+
+    .inventory-section {
+        padding: 4px;
+    }
+
+    .inventory-section h3 {
+        margin-bottom: 4px;
+    }
+
+    .inventory-hotbar-title {
+        margin-top: 5px !important;
+    }
 }
-#hotbar {
+
+/* ==========================================
+   RESPONSIVE INVENTORY LAYOUT FIX
+========================================== */
+
+/* Main window */
+.craft-window {
+    min-height: 0;
     display: flex;
-    gap: 4px;
-    justify-content: center;
-    max-width: 95vw;
+    flex-direction: column;
 }
 
-.slot {
-    min-width: 55px;
+/* Top content gets only the height it needs */
+.craft-content {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
+}
+
+/* Keep player and crafting panels responsive */
+.craft-top {
+    flex: 0 0 clamp(125px, 25vh, 205px);
+    min-height: 0;
+}
+
+/* Inventory gets ALL remaining window height */
+.inventory-section {
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 4fr) auto minmax(0, 1fr);
+    gap: 6px;
+    justify-content: stretch;
+    align-content: stretch;
+    overflow: hidden;
+}
+
+/* Inventory headings */
+.inventory-section h3 {
+    margin: 0;
+    align-self: center;
+}
+
+/* Main inventory: 9 columns and 4 rows */
+#inventory-grid {
+    width: min(100%, 650px);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: clamp(2px, .5vw, 5px);
+}
+
+/* Inventory hotbar: exactly 9 columns */
+#inventory-hotbar {
+    width: min(100%, 650px);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    gap: clamp(2px, .5vw, 5px);
+}
+
+/* Slots fill their available grid cells */
+.inventory-slot {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: auto;
+}
+
+/* Keep the character visible */
+.avatar-frame .big-avatar {
+    position: relative;
+    flex: none;
+    transform: scale(.85);
+    transform-origin: center center;
+}
+
+/* Short screens */
+@media (max-height: 600px) {
+    .craft-top {
+        flex-basis: clamp(105px, 22vh, 135px);
+    }
+
+    .inventory-section {
+        gap: 3px;
+        padding: 4px;
+    }
+}
+
+/* ==========================================
+   INVENTORY CHARACTER
+========================================== */
+
+.avatar-frame {
+    display: grid;
+    place-items: center;
+    overflow: visible;
+}
+
+.avatar-frame .big-avatar {
+    position: relative;
+    width: 110px;
+    height: 175px;
+    flex: none;
+    transform: scale(.85);
+    transform-origin: center center;
+}
+
+.big-head {
+    position: absolute;
+    top: 0;
+    left: 30px;
+    width: 44px;
+    height: 48px;
+    background: #dca477;
+    border: 4px solid #513626;
+}
+
+.big-torso {
+    position: absolute;
+    top: 48px;
+    left: 23px;
+    width: 66px;
+    height: 67px;
+    background: #3979a7;
+    border: 4px solid #244d69;
+}
+
+.big-arm {
+    position: absolute;
+    top: 51px;
+    width: 19px;
+    height: 67px;
+    background: #dca477;
+    border: 3px solid #80583d;
+}
+
+.big-arm.a {
+    left: 4px;
+}
+
+.big-arm.b {
+    right: 4px;
+}
+
+.big-leg {
+    position: absolute;
+    top: 115px;
+    width: 27px;
+    height: 57px;
+    background: #334454;
+    border: 3px solid #202d38;
+}
+
+.big-leg.c {
+    left: 25px;
+}
+
+.big-leg.d {
+    right: 25px;
+}
+
+/* ==========================================
+   MINECRAFT-STYLE RESPONSIVE INVENTORY
+   (everything is sized from --slot)
+========================================== */
+
+#crafting {
+    --gap: 4px;
+    /* slot fits both screen width AND height */
+    --slot: clamp(22px,
+            min(calc((100vw - 60px) / 9.6), calc((100dvh - 250px) / 9.6)),
+            60px);
+    --u: calc(var(--slot) * 0.024);
+    /* avatar unit */
+    --inv-w: calc(var(--slot) * 9 + var(--gap) * 8);
+}
+
+/* Window hugs the content instead of a fixed size */
+.craft-window {
+    width: calc(var(--inv-w) + 40px);
+    max-width: 98vw;
+    height: auto;
+    max-height: 98dvh;
+    padding: 14px 18px 18px;
+    overflow: hidden;
+}
+
+.craft-content {
+    flex: none;
+    width: var(--inv-w);
+    margin: 0 auto;
+    gap: calc(var(--slot) * 0.25);
+    padding-top: 12px;
+    overflow: visible;
+}
+
+/* ---------- TOP: player + crafting, exactly 4 slots tall ---------- */
+.craft-top {
+    flex: none;
+    width: 100%;
+    height: calc(var(--slot) * 4 + var(--gap) * 3 + 16px);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap);
+}
+
+.craft-player,
+.craft-grid-section {
+    padding: 8px;
+    overflow: hidden;
+}
+
+.player-preview-layout {
+    grid-template-columns: var(--slot) minmax(0, 1fr);
+    gap: 8px;
+}
+
+.armor-slots {
+    width: var(--slot);
+    height: 100%;
+    grid-template-rows: repeat(4, var(--slot));
+    gap: var(--gap);
+}
+
+.armor-slot {
+    font-size: calc(var(--slot) * 0.17);
+}
+
+.player-preview {
+    justify-content: center;
+}
+
+.player-preview p,
+.player-preview small {
+    display: none;
+    /* Minecraft doesn't show these */
+}
+
+.avatar-frame {
     flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+/* Avatar is built from --u so it scales with the slots (no transform) */
+.avatar-frame .big-avatar {
+    position: relative;
+    flex: none;
+    transform: none;
+    width: calc(110 * var(--u));
+    height: calc(175 * var(--u));
+}
+
+.big-head {
+    top: 0;
+    left: calc(30 * var(--u));
+    width: calc(44 * var(--u));
+    height: calc(48 * var(--u));
+    border-width: calc(4 * var(--u));
+}
+
+.big-torso {
+    top: calc(48 * var(--u));
+    left: calc(23 * var(--u));
+    width: calc(66 * var(--u));
+    height: calc(67 * var(--u));
+    border-width: calc(4 * var(--u));
+}
+
+.big-arm {
+    top: calc(51 * var(--u));
+    width: calc(19 * var(--u));
+    height: calc(67 * var(--u));
+    border-width: calc(3 * var(--u));
+}
+
+.big-arm.a {
+    left: calc(4 * var(--u));
+}
+
+.big-arm.b {
+    right: calc(4 * var(--u));
+}
+
+.big-leg {
+    top: calc(115 * var(--u));
+    width: calc(27 * var(--u));
+    height: calc(57 * var(--u));
+    border-width: calc(3 * var(--u));
+}
+
+.big-leg.c {
+    left: calc(25 * var(--u));
+}
+
+.big-leg.d {
+    right: calc(25 * var(--u));
+}
+
+/* ---------- Crafting 2x2 ---------- */
+.craft-grid-section h3 {
+    margin: 0 0 6px;
+    font-size: calc(var(--slot) * 0.28);
+}
+
+.craft-grid-layout {
+    gap: calc(var(--slot) * 0.3);
+}
+
+#craft-grid {
+    grid-template-columns: repeat(2, var(--slot));
+    gap: var(--gap);
+}
+
+.craft-slot {
+    width: var(--slot);
+    height: var(--slot);
+}
+
+.craft-arrow {
+    font-size: calc(var(--slot) * 0.5);
+}
+
+/* ---------- Inventory + hotbar: square slots ---------- */
+.inventory-section {
+    flex: none;
+    display: block;
+    padding: 0;
+    background: none;
+    border: 0;
+    overflow: visible;
+}
+
+.inventory-section h3 {
+    margin: 0 0 4px;
+    font-size: calc(var(--slot) * 0.26);
+}
+
+.inventory-section h3.inventory-hotbar-title,
+.inventory-hotbar-title {
+    margin-top: calc(var(--slot) * 0.2) !important;
+}
+
+#inventory-grid,
+#inventory-hotbar {
+    width: var(--inv-w);
+    height: auto;
+    margin: 0;
+    grid-template-columns: repeat(9, var(--slot));
+    grid-template-rows: none;
+    grid-auto-rows: var(--slot);
+    gap: var(--gap);
+}
+
+.inventory-slot {
+    width: var(--slot);
+    height: var(--slot);
+    aspect-ratio: 1 / 1;
+    border-width: 2px;
+}
+
+.inventory-slot .item-count,
+.inventory-slot .block-count {
+    font-size: calc(var(--slot) * 0.25);
+}
+
+.inventory-slot .item-name {
+    font-size: calc(var(--slot) * 0.14);
+}
+
+/* Header shrinks on small screens */
+@media (max-height: 600px) {
+    .craft-window header small {
+        display: none;
+    }
+
+    .craft-window h2 {
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .craft-window header {
+        padding-bottom: 6px;
+    }
+
+    .craft-window header button {
+        width: 28px;
+        height: 28px;
+        font-size: 20px;
+    }
+}
+
+.inventory-slot[draggable="true"] {
+    cursor: grab;
+}
+
+.inventory-slot.dragging {
+    opacity: .35;
+}
+
+.inventory-slot.drag-over {
+    border-color: #e4b94f;
+    background: #43565f;
+}
+
+.inventory-slot .block-preview {
+    pointer-events: none;
+}
+
+.avatar-frame {
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-frame canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#craft-result {
+    border-color: #e4b94f;
+}
+
+#craft-result:empty {
+    opacity: .6;
+}
+
+.craft-slot .block-preview {
+    pointer-events: none;
+}
+
+#table-crafting {
+    --gap: 4px;
+    --slot: clamp(22px, min(calc((100vw - 60px) / 9.6), calc((100dvh - 280px) / 8.5)), 56px);
+
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(8, 13, 18, .82);
+    display: grid;
+    place-items: center;
+    padding: 12px;
+    overflow: hidden;
+}
+
+.table-window {
+    width: calc(var(--slot) * 9 + var(--gap) * 8 + 40px);
+    max-width: 98vw;
+    max-height: 98dvh;
+    padding: 14px 18px 18px;
+    background: #202b34;
+    border: 2px solid #71818b;
+    border-radius: 12px;
+    box-shadow: 0 22px 80px #0009;
+    overflow: hidden;
+}
+
+.table-window header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ffffff24;
+    padding-bottom: 10px;
+}
+
+.table-window header small {
+    color: #8eb2c6;
+    letter-spacing: 2px;
+    font-size: 9px;
+}
+
+.table-window h2 {
+    margin: 3px 0 0;
+    font-size: 20px;
+}
+
+.table-window header button {
+    border: 0;
+    background: #394751;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 24px;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+}
+
+.table-craft-row {
+    display: flex;
+    align-items: center;
+    /* output sits in the middle of the grid */
+    justify-content: center;
+    gap: calc(var(--slot) * 0.6);
+    margin-top: 12px;
+    padding: 12px 0;
+    background: #172129;
+    border: 1px solid #ffffff20;
+    border-radius: 9px;
+}
+
+#table-grid {
+    display: grid;
+    grid-template-columns: repeat(3, var(--slot));
+    gap: var(--gap);
+}
+
+#table-crafting h3 {
+    margin: 12px 0 5px;
+    font-size: 13px;
+}
+
+#table-crafting .slot-grid {
+    display: grid;
+    grid-template-columns: repeat(9, var(--slot));
+    grid-auto-rows: var(--slot);
+    gap: var(--gap);
+    justify-content: center;
+}
+
+#table-crafting .inventory-slot {
+    width: var(--slot);
+    height: var(--slot);
+    aspect-ratio: 1 / 1;
+}
+
+#table-crafting #table-result {
+    width: calc(var(--slot) * 1.25);
+    height: calc(var(--slot) * 1.25);
+    border-color: #e4b94f;
+}
+
+#table-crafting .inventory-slot .block-count {
+    font-size: calc(var(--slot) * 0.25);
 }
