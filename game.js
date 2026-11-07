@@ -3249,6 +3249,7 @@ function toggleCraft() {
 
     panel.classList.remove('hidden');
     document.exitPointerLock?.();
+    renderInventory();
 
   } else {
     returnHeldStack();
