@@ -709,8 +709,15 @@ const AXES = {
   diamondAxe: { head: '#36c9c9', speed: 4, durability: 350 }
 };
 
+const SWORDS = {
+  woodenSword: { head: '#a8753e', damage: 2, cooldown: 0.42 },
+  stoneSword: { head: '#8a8a8a', damage: 3, cooldown: 0.38 },
+  ironSword: { head: '#d8d8d8', damage: 4, cooldown: 0.34 },
+  diamondSword: { head: '#36c9c9', damage: 5, cooldown: 0.30 }
+};
+
 // Used by the durability bar for both tool types.
-const TOOLS = { ...PICKAXES, ...AXES };
+const TOOLS = { ...PICKAXES, ...AXES, ...SWORDS };
 // ==========================================
 // PICKAXE DURABILITY UI
 // ==========================================
@@ -871,6 +878,28 @@ function createHeldItem(type) {
     return group;
   }
 
+  if (SWORDS[type]) {
+    const handle = new THREE.Mesh(
+      new THREE.BoxGeometry(0.06, 0.34, 0.06),
+      new THREE.MeshLambertMaterial({ color: 0x79502f })
+    );
+    const blade = new THREE.Mesh(
+      new THREE.BoxGeometry(0.11, 0.48, 0.06),
+      new THREE.MeshLambertMaterial({
+        color: SWORDS[type].head,
+        flatShading: true
+      })
+    );
+    const guard = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.06, 0.08),
+      new THREE.MeshLambertMaterial({ color: 0xd8d8d8 })
+    );
+    blade.position.y = 0.35;
+    guard.position.y = 0.12;
+    group.add(handle, blade, guard);
+    return group;
+  }
+
   // Axe (all tiers).
   if (AXES[type]) {
     const handleMaterial = new THREE.MeshLambertMaterial({ color: 0x79502f });
@@ -1010,7 +1039,89 @@ function createHeldItem(type) {
     return group;
   }
 
+  if (type === 'leather') {
+    const leather = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.04, 0.18),
+      new THREE.MeshLambertMaterial({ color: 0x9a633a })
+    );
+    leather.rotation.z = -0.2;
+    group.add(leather);
+    return group;
+  }
+
+  if (type === 'beef') {
+    const meat = new THREE.Mesh(
+      new THREE.BoxGeometry(0.20, 0.12, 0.16),
+      new THREE.MeshLambertMaterial({ color: 0xa83f32 })
+    );
+    group.add(meat);
+    return group;
+  }
+
   return null;
+}
+
+function createPlacedDoor() {
+  const door = new THREE.Group();
+  const wood = new THREE.MeshLambertMaterial({ color: 0xa8753e });
+  const darkWood = new THREE.MeshLambertMaterial({ color: 0x4a3018 });
+  const metal = new THREE.MeshLambertMaterial({ color: 0xd8d8d8 });
+
+  const panel = new THREE.Mesh(
+    new THREE.BoxGeometry(0.72, 1.8, 0.10),
+    wood
+  );
+  panel.position.y = 0.4;
+
+  const leftFrame = new THREE.Mesh(
+    new THREE.BoxGeometry(0.10, 1.9, 0.16),
+    darkWood
+  );
+  leftFrame.position.set(-0.41, 0.4, 0);
+
+  const rightFrame = leftFrame.clone();
+  rightFrame.position.x = 0.41;
+
+  const topFrame = new THREE.Mesh(
+    new THREE.BoxGeometry(0.92, 0.10, 0.16),
+    darkWood
+  );
+  topFrame.position.set(0, 1.30, 0);
+
+  const crossbar = new THREE.Mesh(
+    new THREE.BoxGeometry(0.68, 0.07, 0.12),
+    darkWood
+  );
+  crossbar.position.set(0, 0.4, -0.06);
+
+  const handle = new THREE.Mesh(
+    new THREE.BoxGeometry(0.06, 0.06, 0.12),
+    metal
+  );
+  handle.position.set(0.25, 0.4, -0.08);
+
+  const hingeTop = new THREE.Mesh(
+    new THREE.BoxGeometry(0.06, 0.12, 0.06),
+    metal
+  );
+  hingeTop.position.set(-0.32, 0.95, -0.08);
+
+  const hingeBottom = hingeTop.clone();
+  hingeBottom.position.y = -0.15;
+
+  door.add(
+    panel,
+    leftFrame,
+    rightFrame,
+    topFrame,
+    crossbar,
+    handle,
+    hingeTop,
+    hingeBottom
+  );
+
+  door.userData.isPlacedDoor = true;
+  return door;
 }
 
 let currentHeldType = null;
@@ -1360,6 +1471,19 @@ function drawToolIcon(type) {
     px(28, 10, 14, 14, '#5e8122');
     px(38, 32, 14, 14, '#8da83a');
     px(20, 40, 14, 14, '#46681c');
+  } else if (SWORDS[type]) {
+    const c = SWORDS[type].head;
+    px(28, 8, 8, 38, c);
+    px(20, 38, 24, 6, '#d8d8d8');
+    px(28, 44, 8, 14, '#79502f');
+  } else if (type === 'leather') {
+    px(12, 18, 40, 30, '#9a633a');
+    px(18, 12, 26, 8, '#b77b49');
+    px(18, 46, 28, 6, '#704325');
+  } else if (type === 'beef') {
+    px(12, 18, 40, 30, '#a83f32');
+    px(20, 12, 22, 8, '#d4674b');
+    px(18, 46, 26, 6, '#6d251f');
   } else {
     px(0, 0, 64, 64, '#777');
   }
@@ -1399,6 +1523,18 @@ function addBlock(x, y, z, type = 'stone', size = 1) {
   const id = key(x, y, z);
 
   if (blocks.has(id)) return null;
+
+  if (type === 'door') {
+    const door = createPlacedDoor();
+    door.position.set(x, y + 0.4, z);
+    door.userData = {
+      x, y, z, type, size: 0.9, height: 1.8,
+      isPlacedDoor: true
+    };
+    blocks.set(id, door);
+    world.add(door);
+    return door;
+  }
 
   let geometry = cubeGeometry;
   let blockMaterial = materials[type] || materials.stone;
@@ -1494,7 +1630,12 @@ function removeBlock(mesh) {
     if (p.type === 'grass_small' || p.type === 'grass_large') {
       wavingGrass.delete(mesh);
     }
-    if (mesh.geometry !== cubeGeometry && mesh.geometry !== grassGeometry) {
+    if (p.isPlacedDoor) {
+      mesh.traverse(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) child.material.dispose();
+      });
+    } else if (mesh.geometry !== cubeGeometry && mesh.geometry !== grassGeometry) {
       mesh.geometry.dispose();
     }
   } else {
@@ -1764,6 +1905,7 @@ const SPEED = 5.2;
 
 let velocityY = 0;
 let onGround = false;
+let fallStartFeet = null;
 
 let yaw = 0;
 let pitch = 0;
@@ -1772,6 +1914,45 @@ let locked = false;
 const keys = {};
 
 let jumpRequested = false;
+
+function damagePlayer(amount, reason = 'Damage') {
+  if (damageCooldown > 0 || amount <= 0) return;
+
+  playerHealth = Math.max(0, playerHealth - amount);
+  damageCooldown = 0.35;
+  regenerationTimer = 0;
+  updateStatusBars();
+  toast(`${reason}: -${amount} health`);
+}
+
+function updateSurvival(dt) {
+  damageCooldown = Math.max(0, damageCooldown - dt);
+
+  const moving = keys.KeyW || keys.KeyA || keys.KeyS || keys.KeyD;
+  const active = moving || !onGround || jumpRequested;
+  const hungerDrainRate = active ? 0.012 : 0.004;
+
+  hungerTimer += dt * hungerDrainRate;
+  if (hungerTimer >= 1) {
+    const points = Math.floor(hungerTimer);
+    playerHunger = Math.max(0, playerHunger - points);
+    hungerTimer -= points;
+    updateStatusBars();
+  }
+
+  if (playerHealth < MAX_HEALTH && playerHunger >= 18) {
+    regenerationTimer += dt;
+
+    if (regenerationTimer >= 4) {
+      playerHealth = Math.min(MAX_HEALTH, playerHealth + 1);
+      playerHunger = Math.max(0, playerHunger - 1);
+      regenerationTimer = 0;
+      updateStatusBars();
+    }
+  } else {
+    regenerationTimer = 0;
+  }
+}
 
 document.addEventListener('keydown', (e) => {
   keys[e.code] = true;
@@ -1817,6 +1998,146 @@ const hotbar = document.querySelector('#hotbar');
 
 let selected = 0;
 
+const statusBars = document.createElement('div');
+statusBars.id = 'status-bars';
+statusBars.style.cssText = `
+  position: fixed;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+  height: 42px;
+`;
+
+const hungerBar = document.createElement('div');
+hungerBar.style.cssText = `
+  display: grid;
+  grid-template-columns: repeat(10, 15px);
+  gap: 1px;
+  margin-bottom: 21px;
+`;
+
+const heartBar = document.createElement('div');
+heartBar.style.cssText = `
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(10, 15px);
+  gap: 1px;
+`;
+
+const armorBar = document.createElement('div');
+armorBar.style.cssText = `
+  display: grid;
+  grid-template-columns: repeat(10, 15px);
+  gap: 1px;
+  margin-bottom: 21px;
+`;
+
+const MAX_HEALTH = 20;
+const MAX_HUNGER = 20;
+let playerHealth = MAX_HEALTH;
+let playerHunger = MAX_HUNGER;
+let hungerTimer = 0;
+let regenerationTimer = 0;
+let damageCooldown = 0;
+
+function createStatusIcon(symbol, color, outline) {
+  const icon = document.createElement('span');
+  icon.textContent = symbol;
+  icon.style.cssText = `
+    width: 15px;
+    height: 16px;
+    color: ${color};
+    font: 900 15px/16px Arial, sans-serif;
+    text-align: center;
+    text-shadow:
+      -1px -1px 0 ${outline},
+      1px -1px 0 ${outline},
+      -1px 1px 0 ${outline},
+      1px 1px 0 ${outline},
+      0 2px 3px #000;
+  `;
+  return icon;
+}
+
+const hungerIcons = [];
+const heartIcons = [];
+const armorIcons = [];
+
+for (let i = 0; i < 10; i++) {
+  const hungerIcon = createStatusIcon('🍗', '#d87932', '#512512');
+  const heartIcon = createStatusIcon('♥', '#e53935', '#5b1010');
+  const armorIcon = createStatusIcon('◆', '#b9c9d6', '#26343d');
+
+  hungerIcons.push(hungerIcon);
+  heartIcons.push(heartIcon);
+  armorIcons.push(armorIcon);
+
+  hungerBar.appendChild(hungerIcon);
+  heartBar.appendChild(heartIcon);
+  armorBar.appendChild(armorIcon);
+}
+
+statusBars.append(hungerBar, heartBar, armorBar);
+document.body.appendChild(statusBars);
+
+function updateStatusBars() {
+  const updateBar = (icons, value, full, half, empty, color, outline) => {
+    icons.forEach((icon, index) => {
+      const points = value - index * 2;
+      icon.textContent = points >= 2 ? full : points === 1 ? half : empty;
+      icon.style.color = points > 0 ? color : '#46515a';
+      icon.style.textShadow = `
+        -1px -1px 0 ${outline},
+        1px -1px 0 ${outline},
+        -1px 1px 0 ${outline},
+        1px 1px 0 ${outline},
+        0 2px 3px #000
+      `;
+    });
+  };
+
+  updateBar(
+    heartIcons,
+    playerHealth,
+    '♥',
+    '◐',
+    '♡',
+    '#e53935',
+    '#5b1010'
+  );
+  updateBar(
+    hungerIcons,
+    playerHunger,
+    '🍗',
+    '◒',
+    '·',
+    '#d87932',
+    '#512512'
+  );
+  updateBar(
+    armorIcons,
+    0,
+    '◆',
+    '◇',
+    '◇',
+    '#b9c9d6',
+    '#26343d'
+  );
+}
+
+updateStatusBars();
+
+function positionStatusBars() {
+  const rect = hotbar.getBoundingClientRect();
+  statusBars.style.left = `${rect.left}px`;
+  statusBars.style.width = `${rect.width}px`;
+  statusBars.style.bottom = `${innerHeight - rect.top + 6}px`;
+}
+
 function renderHotbar() {
   hotbar.innerHTML = '';
 
@@ -1846,6 +2167,7 @@ function renderHotbar() {
   });
 
   updateHeldBlock();
+  positionStatusBars();
 }
 
 renderHotbar();
@@ -2342,12 +2664,13 @@ function intersectsPlayer(x, feet, z, block) {
 
   const p = block.position;
   const size = block.userData.size || 1;
+  const height = block.userData.height || 1;
 
   return (
     x + PLAYER_RADIUS > p.x - size / 2 &&
     x - PLAYER_RADIUS < p.x + size / 2 &&
-    feet < p.y + 0.5 &&
-    feet + PLAYER_HEIGHT > p.y - 0.5 &&
+    feet < p.y + height / 2 &&
+    feet + PLAYER_HEIGHT > p.y - height / 2 &&
     z + PLAYER_RADIUS > p.z - size / 2 &&
     z - PLAYER_RADIUS < p.z + size / 2
   );
@@ -2384,6 +2707,8 @@ const inventory = {
   wood: 0,
   leaves: 0,
   seeds: 0,
+  leather: 0,
+  beef: 0,
   flint: 0,
   flintSteel: 0,
   planks: 0,
@@ -2398,6 +2723,10 @@ const inventory = {
   stoneAxe: 0,
   ironAxe: 0,
   diamondAxe: 0,
+  woodenSword: 0,
+  stoneSword: 0,
+  ironSword: 0,
+  diamondSword: 0,
   door: 0,
 };
 
@@ -2825,6 +3154,12 @@ function updateDrops(dt) {
 function explode(position) {
 
   const destroyed = [];
+  const explosionDistance = camera.position.distanceTo(position);
+
+  if (explosionDistance < 4.5) {
+    const damage = Math.max(1, Math.ceil((4.5 - explosionDistance) * 2));
+    damagePlayer(damage, 'Explosion damage');
+  }
 
   let deepestDestroyedY = generatedDepth;
 
@@ -2893,7 +3228,7 @@ let currentTargetHit = null;
 function targeted() {
   raycaster.setFromCamera(center, camera);
 
-  const worldHits = raycaster.intersectObjects(world.children, false);
+  const worldHits = raycaster.intersectObjects(world.children, true);
 
   const torchGroups = [...placedTorches.values()];
   const torchHits = raycaster.intersectObjects(torchGroups, true);
@@ -2925,7 +3260,17 @@ function targeted() {
 
     hit.block = block;
   } else {
-    hit.block = hit.object;
+    let block = hit.object;
+
+    while (
+      block.parent &&
+      !block.userData.type &&
+      !block.userData.isPlacedDoor
+    ) {
+      block = block.parent;
+    }
+
+    hit.block = block;
   }
 
   return hit;
@@ -3471,6 +3816,7 @@ function updateMovement(dt) {
   if (jumpRequested && onGround && !isCrouching) {
     velocityY = JUMP_FORCE;
     onGround = false;
+    fallStartFeet = camera.position.y - PLAYER_EYE;
   }
 
   jumpRequested = false;
@@ -3514,6 +3860,14 @@ function updateGravity(dt) {
     );
 
     if (highestGround !== -Infinity) {
+      if (fallStartFeet !== null) {
+        const fallDistance = fallStartFeet - highestGround;
+        if (fallDistance > 3) {
+          damagePlayer(Math.floor((fallDistance - 3) * 2), 'Fall damage');
+        }
+        fallStartFeet = null;
+      }
+
       camera.position.y = highestGround + PLAYER_EYE;
       velocityY = 0;
       onGround = true;
@@ -3554,12 +3908,16 @@ function updateGravity(dt) {
   }
 
   camera.position.y += velocityY * dt;
+  if (fallStartFeet === null) {
+    fallStartFeet = feet;
+  }
   onGround = false;
 
   if (camera.position.y < MIN_WORLD_DEPTH - 8) {
     camera.position.set(SPAWN_X, 2.22, SPAWN_Z);
     velocityY = 0;
     onGround = false;
+    fallStartFeet = null;
     toast('Returned to spawn.');
   }
 }
@@ -3811,6 +4169,7 @@ function animate(now) {
   camera.rotation.x = pitch;
 
   updateMovement(dt);
+  updateSurvival(dt);
   updateDrops(dt);
 
   currentTargetHit = locked ? targeted() : null;
@@ -3841,4 +4200,5 @@ addEventListener('resize', () => {
   camera.updateProjectionMatrix();
 
   renderer.setSize(innerWidth, innerHeight);
+  positionStatusBars();
 });
