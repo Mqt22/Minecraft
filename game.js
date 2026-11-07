@@ -606,6 +606,15 @@ const PICKAXES = {
   }
 };
 
+const AXES = {
+  woodenAxe: { head: '#a8753e', speed: 1.5, durability: 25 },
+  stoneAxe: { head: '#8a8a8a', speed: 2, durability: 60 },
+  ironAxe: { head: '#d8d8d8', speed: 3, durability: 150 },
+  diamondAxe: { head: '#36c9c9', speed: 4, durability: 350 }
+};
+
+// Used by the durability bar for both tool types.
+const TOOLS = { ...PICKAXES, ...AXES };
 // ==========================================
 // PICKAXE DURABILITY UI
 // ==========================================
@@ -643,12 +652,12 @@ durabilityUI.appendChild(durabilityFill);
 document.body.appendChild(durabilityUI);
 
 function updatePickaxeDurabilityUI(item) {
-  if (!item || !PICKAXES[item.type]) {
+  if (!item || !TOOLS[item.type]) {
     durabilityUI.style.display = 'none';
     return;
   }
 
-  const max = PICKAXES[item.type].durability;
+  const max = TOOLS[item.type].durability;
 
   if (item.durability === undefined) {
     item.durability = max;
@@ -667,9 +676,9 @@ function hidePickaxeDurabilityUI() {
 }
 
 function damagePickaxe(item) {
-  if (!item || !PICKAXES[item.type]) return;
+  if (!item || !TOOLS[item.type]) return;
 
-  const max = PICKAXES[item.type].durability;
+  const max = TOOLS[item.type].durability;
 
   if (item.durability === undefined) {
     item.durability = max;
@@ -689,7 +698,7 @@ function damagePickaxe(item) {
     renderHotbar();
     renderInventory();
 
-    toast(`${type.replace('Pickaxe', ' pickaxe')} broke!`);
+    toast(`${type.replace('Pickaxe', ' pickaxe').replace('Axe', ' axe')} broke!`);
   }
 }
 
@@ -700,12 +709,19 @@ function damagePickaxe(item) {
 const heldItem = new THREE.Group();
 hand.add(heldItem);
 
-// Light follows the player while a torch is held.
+// Shared by the held torch and placed torches. Tweak these numbers to taste.
+const TORCH_LIGHT = {
+  color: 0xffb84a,
+  intensity: 10,   // was 3.5
+  distance: 26,    // was 10
+  decay: 1.6       // lower = light reaches further
+};
+
 const heldTorchLight = new THREE.PointLight(
-  0xffb84a,
-  3.5,
-  10,
-  2
+  TORCH_LIGHT.color,
+  TORCH_LIGHT.intensity,
+  TORCH_LIGHT.distance,
+  TORCH_LIGHT.decay
 );
 
 heldTorchLight.position.set(0.7, -0.35, -1.0);
@@ -719,10 +735,11 @@ heldItem.rotation.set(0.15, 0.35, -0.15);
 // Held block geometry.
 const heldBlockGeometry = new THREE.BoxGeometry(0.24, 0.24, 0.24);
 
-// Pickaxe geometry
 const pickaxeHandleGeometry = new THREE.BoxGeometry(0.065, 0.42, 0.065);
-const pickaxeHeadGeometry = new THREE.BoxGeometry(0.38, 0.09, 0.11);
-const pickaxeEdgeGeometry = new THREE.BoxGeometry(0.13, 0.09, 0.11);
+
+// Head now extends along the Z-axis.
+const pickaxeHeadGeometry = new THREE.BoxGeometry(0.11, 0.09, 0.38);
+const pickaxeEdgeGeometry = new THREE.BoxGeometry(0.11, 0.09, 0.13);
 
 function createHeldItem(type) {
   const group = new THREE.Group();
@@ -754,6 +771,36 @@ function createHeldItem(type) {
     );
     flame.position.y = 0.2;
     group.add(stick, flame);
+    group.userData.flame = flame;
+    return group;
+  }
+
+  // Axe (all tiers).
+  if (AXES[type]) {
+    const handleMaterial = new THREE.MeshLambertMaterial({ color: 0x79502f });
+    const headMaterial = new THREE.MeshLambertMaterial({
+      color: AXES[type].head,
+      flatShading: true
+    });
+
+    const handle = new THREE.Mesh(pickaxeHandleGeometry, handleMaterial);
+    handle.position.y = -0.08;
+    group.add(handle);
+
+    const head = new THREE.Mesh(
+      new THREE.BoxGeometry(0.09, 0.16, 0.14),
+      headMaterial
+    );
+    head.position.set(0, 0.12, -0.07);
+    group.add(head);
+
+    const blade = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.25, 0.06),
+      headMaterial
+    );
+    blade.position.set(0, 0.10, -0.17);
+    group.add(blade);
+
     return group;
   }
 
@@ -787,13 +834,14 @@ function createHeldItem(type) {
     group.add(head);
 
     // Left pointed end.
+    // Left pointed end.
     const leftEdge = new THREE.Mesh(
       pickaxeEdgeGeometry,
       headMaterial
     );
 
-    leftEdge.position.set(-0.23, 0.11, 0);
-    leftEdge.rotation.z = -0.65;
+    leftEdge.position.set(0, 0.11, -0.23);
+    leftEdge.rotation.x = -0.65;
     group.add(leftEdge);
 
     // Right pointed end.
@@ -802,8 +850,8 @@ function createHeldItem(type) {
       headMaterial
     );
 
-    rightEdge.position.set(0.23, 0.11, 0);
-    rightEdge.rotation.z = 0.65;
+    rightEdge.position.set(0, 0.11, 0.23);
+    rightEdge.rotation.x = 0.65;
     group.add(rightEdge);
 
     // Central connection between handle and head.
@@ -815,6 +863,21 @@ function createHeldItem(type) {
     connector.position.y = 0.10;
     group.add(connector);
 
+    return group;
+  }
+
+  // Door.
+  if (type === 'door') {
+    const panel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.2, 0.36, 0.035),
+      new THREE.MeshLambertMaterial({ color: 0xa8753e })
+    );
+    const knob = new THREE.Mesh(
+      new THREE.BoxGeometry(0.03, 0.03, 0.05),
+      new THREE.MeshLambertMaterial({ color: 0xd8d8d8 })
+    );
+    knob.position.set(0.07, -0.02, 0);
+    group.add(panel, knob);
     return group;
   }
 
@@ -863,6 +926,12 @@ function updateHeldBlock() {
 
   currentHeldObject = createHeldItem(type);
   if (!currentHeldObject) return;
+
+  // Slightly adjust pickaxe position without moving other items.
+  // Raise tools so the hand grips the lower handle, not the head.
+  if (TOOLS[type]) {
+    currentHeldObject.position.set(-0.04, 0.16, 0.05);
+  }
 
   heldItem.add(currentHeldObject);
 }
@@ -1116,6 +1185,22 @@ function drawToolIcon(type) {
     px(8, 14, 10, 10, shade(c, -0.25));
     px(46, 14, 10, 10, shade(c, -0.25));
     px(24, 8, 16, 8, shade(c, 0.25));
+  } else if (AXES[type]) {
+    const c = AXES[type].head;
+    for (let i = 0; i < 5; i++) {
+      px(14 + i * 8, 52 - i * 8, 8, 8, '#85552d');   // handle
+    }
+    px(14, 8, 26, 10, c);                             // head top
+    px(8, 18, 20, 10, shade(c, -0.2));                // blade
+    px(28, 18, 10, 8, shade(c, 0.2));
+  } else if (type === 'door') {
+    px(16, 4, 32, 56, '#4a3018');       // outline
+    px(18, 6, 28, 52, '#a8753e');
+    px(21, 9, 10, 20, '#c28a50');       // panels
+    px(33, 9, 10, 20, '#c28a50');
+    px(21, 33, 10, 22, '#c28a50');
+    px(33, 33, 10, 22, '#c28a50');
+    px(40, 29, 4, 4, '#d8d8d8');        // knob
   } else if (type === 'torch') {
     px(28, 26, 8, 30, '#8a5a2b');                     // stick
     px(28, 26, 3, 30, '#a8753e');
@@ -1786,6 +1871,38 @@ for (const [mat, tool] of Object.entries(PICKAXE_MATERIALS)) {
     { type: tool, count: 1 });
 }
 
+// Axe layout (3x3 table):
+// [M][M][ ]
+// [M][S][ ]
+// [ ][S][ ]   (the mirrored version works too)
+const AXE_MATERIALS = {
+  planks: 'woodenAxe',
+  cobblestone: 'stoneAxe',
+  iron: 'ironAxe',
+  diamond: 'diamondAxe'
+};
+
+for (const [mat, tool] of Object.entries(AXE_MATERIALS)) {
+  addRecipe(3, 2,
+    [mat, mat,
+      mat, 'sticks',
+      '_', 'sticks'],
+    { type: tool, count: 1 });
+
+  addRecipe(3, 2,
+    [mat, mat,
+      'sticks', mat,
+      'sticks', '_'],
+    { type: tool, count: 1 });
+}
+
+// Door: planks in 2 columns x 3 rows -> 3 doors (3x3 table only)
+addRecipe(3, 2,
+  ['planks', 'planks',
+    'planks', 'planks',
+    'planks', 'planks'],
+  { type: 'door', count: 3 });
+
 function matchRecipe(grid, size) {
   let minR = size, maxR = -1, minC = size, maxC = -1;
 
@@ -2081,7 +2198,12 @@ const inventory = {
   ironPickaxe: 0,
   diamondPickaxe: 0,
   torch: 0,
-  crafting_table: 0
+  crafting_table: 0,
+  woodenAxe: 0,
+  stoneAxe: 0,
+  ironAxe: 0,
+  diamondAxe: 0,
+  door: 0,
 };
 
 // Recalculate total item counts from both storage and hotbar.
@@ -2218,7 +2340,7 @@ function removeSelectedHotbarItem() {
 
 const placedTorches = new Map();
 
-function placeTorch(x, y, z) {
+function placeTorch(x, y, z, normal = new THREE.Vector3(0, 1, 0)) {
   const id = key(x, y, z);
 
   if (placedTorches.has(id)) return false;
@@ -2250,16 +2372,42 @@ function placeTorch(x, y, z) {
   torchGroup.add(flame);
 
   const light = new THREE.PointLight(
-    0xffb84a,
-    3.5,
-    10,
-    2
+    TORCH_LIGHT.color,
+    TORCH_LIGHT.intensity,
+    TORCH_LIGHT.distance,
+    TORCH_LIGHT.decay
   );
 
   light.position.y = 0.25;
   torchGroup.add(light);
 
-  torchGroup.position.set(x, y, z);
+  // Stick is 0.48 tall, centered at y = -0.20 inside the group,
+  // so its bottom end is at y = -0.44 from the group origin.
+  if (Math.abs(normal.x) > 0.5 || Math.abs(normal.z) > 0.5) {
+    // Wall torch: push it against the wall and lean away from it.
+    const tilt = Math.PI / 6;
+    torchGroup.position.set(
+      x - normal.x * 0.32,
+      y + 0.05,
+      z - normal.z * 0.32
+    );
+    if (Math.abs(normal.x) > 0.5) torchGroup.rotation.z = -normal.x * tilt;
+    else torchGroup.rotation.x = normal.z * tilt;
+  } else {
+    // Floor torch: bottom of the stick touches the top of the block below.
+    torchGroup.position.set(x, y - 0.5 + 0.44, z);
+  }
+
+  torchGroup.userData = {
+    type: 'torch',
+    x, y, z,
+    isPlacedTorch: true,
+    flame,
+    light,
+    flameTimer: 0,
+    phase: Math.random() * 10
+  };
+
   scene.add(torchGroup);
 
   placedTorches.set(id, torchGroup);
@@ -2278,12 +2426,26 @@ Object.keys(materials).forEach(type => {
   dropMaterials[type] = materials[type];
 });
 
+// Blocks drop as small cubes. Other items (torch, tools, sticks, door)
+// keep their own model instead of turning into a stone cube.
+function createDropMesh(type) {
+  if (dropMaterials[type]) {
+    return new THREE.Mesh(dropGeometry, dropMaterials[type]);
+  }
+
+  const model = createHeldItem(type);
+
+  if (!model) {
+    return new THREE.Mesh(dropGeometry, materials.stone);
+  }
+
+  model.scale.setScalar(0.75);
+  return model;
+}
+
 function spawnDrop(position, type) {
 
-  const mesh = new THREE.Mesh(
-    dropGeometry,
-    dropMaterials[type] || materials.stone
-  );
+  const mesh = createDropMesh(type);
 
   mesh.position.copy(position);
   mesh.position.x += (Math.random() - 0.5) * 0.4;
@@ -2302,6 +2464,19 @@ function spawnDrop(position, type) {
 }
 
 function destroyBlock(mesh) {
+
+  // Remove placed torches and drop them as collectible items.
+  if (mesh.userData.isPlacedTorch) {
+    const { x, y, z } = mesh.userData;
+    const id = key(x, y, z);
+
+    scene.remove(mesh);
+    placedTorches.delete(id);
+
+    spawnDrop(mesh.position.clone(), 'torch');
+
+    return;
+  }
 
   const type = mesh.userData.type;
   const treeId = mesh.userData.treeId;
@@ -2516,11 +2691,31 @@ let currentTargetHit = null;
 function targeted() {
   raycaster.setFromCamera(center, camera);
 
-  const hits = raycaster.intersectObjects(world.children, false);
+  const worldHits = raycaster.intersectObjects(world.children, false);
+
+  const torchGroups = [...placedTorches.values()];
+  const torchHits = raycaster.intersectObjects(torchGroups, true);
+
+  const hits = [...worldHits, ...torchHits]
+    .sort((a, b) => a.distance - b.distance);
+
   const hit = hits.find(item => item.distance < 4.5);
 
   if (!hit) return null;
 
+  // Detect placed torches.
+  let torchGroup = hit.object;
+
+  while (torchGroup && !torchGroup.userData.isPlacedTorch) {
+    torchGroup = torchGroup.parent;
+  }
+
+  if (torchGroup?.userData.isPlacedTorch) {
+    hit.block = torchGroup;
+    return hit;
+  }
+
+  // Normal world blocks.
   if (hit.object.userData.isChunkMesh) {
     const block = hit.object.userData.faceBlocks[hit.faceIndex];
 
@@ -2705,7 +2900,8 @@ renderer.domElement.addEventListener('mousedown', e => {
       'tnt',
       'planks',
       'crafting_table',
-      'Torch'
+      'torch',
+      'door'
     ];
 
     if (type && !placeableBlocks.includes(type)) {
@@ -2739,7 +2935,7 @@ renderer.domElement.addEventListener('mousedown', e => {
 
     // Place a torch with its own dynamic light.
     if (type === 'torch') {
-      if (!placeTorch(x, y, z)) return;
+      if (!placeTorch(x, y, z, normal)) return;
 
       removeSelectedHotbarItem();
       triggerHandAction('place');
@@ -2776,7 +2972,7 @@ function updateMining(dt) {
   const target = hit.block;
   const type = target.userData.type;
 
-  // Stone can only be mined with a wooden pickaxe.
+  // Stone and ores need a pickaxe.
   const hardBlocks = [
     'stone',
     'cobblestone',
@@ -2786,47 +2982,45 @@ function updateMining(dt) {
     'flint'
   ];
 
-  const heldTool = PICKAXES[hotbarSlots[selected]?.type];
+  // Axes speed up these blocks.
+  const woodBlocks = ['wood', 'leaves', 'planks', 'crafting_table'];
 
   const heldItemSlot = hotbarSlots[selected];
+  const heldTool = PICKAXES[heldItemSlot?.type];
+  const heldAxe = AXES[heldItemSlot?.type];
+  const axeWorks = heldAxe && woodBlocks.includes(type);
 
-  if (heldTool && miningHeld) {
+  if ((heldTool || heldAxe) && miningHeld) {
     updatePickaxeDurabilityUI(heldItemSlot);
   } else {
     hidePickaxeDurabilityUI();
   }
 
-  if (hardBlocks.includes(type) && !heldTool) {
-    if (target !== miningTarget) {
-      toast('You need a Wooden Pickaxe to mine this block!');
-    }
-
-    miningTarget = target;
-    miningTime = 0;
-    return;
-  }
-
   if (target !== miningTarget) {
     miningTarget = target;
     miningTime = 0;
+
+    // Damage the tool once when mining a new block starts.
+    // Axes only wear out on wood blocks.
+    if ((heldTool || axeWorks) && heldItemSlot) {
+      damagePickaxe(heldItemSlot);
+    }
   }
 
   miningTime += dt;
 
+  // Bare hands: hard blocks take 6x longer (7.2s instead of 1.2s).
   const breakTime = hardBlocks.includes(type)
-    ? 1.2 / (heldTool?.speed || 1)
-    : BLOCK_BREAK_TIME;
+    ? (heldTool ? 1.2 / heldTool.speed : 7.2)
+    : axeWorks
+      ? BLOCK_BREAK_TIME / heldAxe.speed
+      : BLOCK_BREAK_TIME;
 
   if (miningTime >= breakTime) {
     const mesh = miningTarget;
 
     miningTarget = null;
     miningTime = 0;
-
-    // Damage the pickaxe only when a block is successfully broken.
-    if (heldTool && hardBlocks.includes(mesh.userData.type)) {
-      damagePickaxe(heldItemSlot);
-    }
 
     if (mesh.userData.type === 'tnt') {
       explode(mesh.position.clone());
@@ -3259,6 +3453,118 @@ function renderCharacterPreview(now) {
 }
 
 // ==========================================
+// TORCH FLAME PARTICLES + LIGHT FLICKER
+// ==========================================
+
+const flameGeometry = new THREE.BoxGeometry(1, 1, 1);
+const FLAME_COLORS = [0xfff2a8, 0xffc94a, 0xff8a1f, 0xd8441a]; // hot -> cool
+const MAX_FLAME_PARTICLES = 200;
+const FLAME_VIEW_DISTANCE = 28;   // torches farther away skip particles
+
+const flameParticles = [];
+const flamePos = new THREE.Vector3();
+let flameClock = 0;
+let heldFlameTimer = 0;
+
+function spawnFlameParticle(origin) {
+  if (flameParticles.length >= MAX_FLAME_PARTICLES) return;
+
+  const size = 0.035 + Math.random() * 0.04;
+
+  const p = new THREE.Mesh(
+    flameGeometry,
+    new THREE.MeshBasicMaterial({ color: FLAME_COLORS[0], fog: false })
+  );
+
+  p.position.copy(origin);
+  p.position.x += (Math.random() - 0.5) * 0.06;
+  p.position.z += (Math.random() - 0.5) * 0.06;
+  p.scale.setScalar(size);
+
+  p.userData = {
+    age: 0,
+    life: 0.4 + Math.random() * 0.4,
+    size,
+    vx: (Math.random() - 0.5) * 0.12,
+    vy: 0.45 + Math.random() * 0.45,
+    vz: (Math.random() - 0.5) * 0.12
+  };
+
+  scene.add(p);
+  flameParticles.push(p);
+}
+
+function flicker(base, phase) {
+  return base * (
+    0.88 +
+    0.12 * Math.sin(flameClock * 11 + phase) +
+    0.06 * Math.sin(flameClock * 23 + phase * 2)
+  );
+}
+
+function updateFlames(dt) {
+  flameClock += dt;
+
+  // Placed torches: flicker the light and emit particles.
+  for (const torch of placedTorches.values()) {
+    const d = torch.userData;
+
+    d.light.intensity = flicker(TORCH_LIGHT.intensity, d.phase);
+
+    if (
+      torch.position.distanceToSquared(camera.position) >
+      FLAME_VIEW_DISTANCE * FLAME_VIEW_DISTANCE
+    ) continue;
+
+    d.flameTimer -= dt;
+
+    if (d.flameTimer <= 0) {
+      d.flame.getWorldPosition(flamePos);
+      spawnFlameParticle(flamePos);
+      d.flameTimer = 0.045;
+    }
+  }
+
+  // Torch held in the hand.
+  const heldFlame =
+    currentHeldType === 'torch' ? currentHeldObject?.userData.flame : null;
+
+  if (heldFlame) {
+    heldTorchLight.intensity = flicker(TORCH_LIGHT.intensity, 0);
+    heldFlameTimer -= dt;
+
+    if (heldFlameTimer <= 0) {
+      heldFlame.getWorldPosition(flamePos);
+      spawnFlameParticle(flamePos);
+      heldFlameTimer = 0.04;
+    }
+  }
+
+  // Move, shrink and recolor the particles.
+  for (let i = flameParticles.length - 1; i >= 0; i--) {
+    const p = flameParticles[i];
+    const u = p.userData;
+
+    u.age += dt;
+    const t = u.age / u.life;
+
+    if (t >= 1) {
+      scene.remove(p);
+      p.material.dispose();
+      flameParticles.splice(i, 1);
+      continue;
+    }
+
+    p.position.x += u.vx * dt;
+    p.position.y += u.vy * dt;
+    p.position.z += u.vz * dt;
+
+    p.scale.setScalar(u.size * (1 - t * 0.85));
+    p.material.color.setHex(FLAME_COLORS[Math.min(3, Math.floor(t * 4))]);
+  }
+}
+
+// ==========================================
 // GAME LOOP
 // ==========================================
 
@@ -3295,6 +3601,7 @@ function animate(now) {
 
   updateClouds(dt);
   updateDayNight(dt);
+  updateFlames(dt);
 
   renderer.render(scene, camera);
   flushChunkUpdates();
