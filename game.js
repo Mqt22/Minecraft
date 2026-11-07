@@ -182,6 +182,21 @@ document.querySelector('#game').appendChild(renderer.domElement);
 
 const hand = new THREE.Group();
 camera.add(hand);
+const handCollisionRaycaster = new THREE.Raycaster();
+const handCollisionOrigin = new THREE.Vector3();
+const handCollisionTarget = new THREE.Vector3();
+const handCollisionDirection = new THREE.Vector3();
+const handCollisionPoints = [
+  [-0.13, -0.11, -0.24],
+  [-0.13, -0.11, 0.24],
+  [-0.13, 0.11, -0.24],
+  [-0.13, 0.11, 0.24],
+  [0.13, -0.11, -0.24],
+  [0.13, -0.11, 0.24],
+  [0.13, 0.11, -0.24],
+  [0.13, 0.11, 0.24]
+].map(([x, y, z]) => new THREE.Vector3(x, y, z));
+let handCollisionOffset = 0;
 
 const skinMaterial = new THREE.MeshLambertMaterial({
   color: 0xc58b63
@@ -274,6 +289,46 @@ function updateHandAnimation(dt) {
   hand.rotation.x = actionRotation;
   hand.rotation.y = walkX * 1.2;
   hand.rotation.z = -walkX * 0.8;
+}
+
+function updateHandCollision(dt) {
+  camera.getWorldPosition(handCollisionOrigin);
+  let targetOffset = 0;
+
+  for (const localPoint of handCollisionPoints) {
+    handCollisionTarget.copy(localPoint);
+    arm.localToWorld(handCollisionTarget);
+
+    handCollisionDirection
+      .subVectors(handCollisionTarget, handCollisionOrigin)
+      .normalize();
+
+    const handDistance = handCollisionOrigin.distanceTo(handCollisionTarget);
+
+    handCollisionRaycaster.set(
+      handCollisionOrigin,
+      handCollisionDirection
+    );
+    handCollisionRaycaster.far = handDistance;
+
+    const hit = handCollisionRaycaster
+      .intersectObjects(world.children, false)[0];
+
+    if (hit) {
+      targetOffset = Math.max(
+        targetOffset,
+        Math.min(0.8, handDistance - hit.distance + 0.14)
+      );
+    }
+  }
+
+  handCollisionOffset = THREE.MathUtils.lerp(
+    handCollisionOffset,
+    targetOffset,
+    Math.min(dt * 18, 1)
+  );
+
+  hand.position.z += handCollisionOffset;
 }
 
 
@@ -506,6 +561,45 @@ function createBlockTexture(type, face = 'side') {
   return texture;
 }
 
+function createGrassTexture(large) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 64;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = large ? '#315f24' : '#477b2b';
+
+  const blades = large
+    ? [[14, 2, 4, 56], [6, 18, 4, 42], [22, 10, 4, 50], [2, 30, 4, 30]]
+    : [[14, 20, 4, 42], [7, 30, 4, 32], [21, 26, 4, 36]];
+
+  for (const [x, y, width, height] of blades) {
+    ctx.fillRect(x, y, width, height);
+    ctx.fillRect(x - 4, y + 8, 4, 5);
+  }
+
+  const texture = finishTexture(canvas);
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  return texture;
+}
+
+const grassMaterials = {
+  grass_small: new THREE.MeshLambertMaterial({
+    map: createGrassTexture(false),
+    transparent: true,
+    alphaTest: 0.35,
+    side: THREE.DoubleSide
+  }),
+  grass_large: new THREE.MeshLambertMaterial({
+    map: createGrassTexture(true),
+    transparent: true,
+    alphaTest: 0.35,
+    side: THREE.DoubleSide
+  })
+};
+
 
 // Creates all six face materials for each block.
 function createBlockMaterials(type) {
@@ -577,6 +671,8 @@ const materials = {
   tnt: createBlockMaterials('tnt'),
   planks: createBlockMaterials('planks'),
   crafting_table: createBlockMaterials('crafting_table'),
+  grass_small: grassMaterials.grass_small,
+  grass_large: grassMaterials.grass_large,
 };
 
 // Pickaxe head color + mining speed multiplier
@@ -903,6 +999,17 @@ function createHeldItem(type) {
     return group;
   }
 
+  if (type === 'seeds') {
+    const seedMaterial = new THREE.MeshLambertMaterial({ color: 0x6a8b25 });
+    const seed = new THREE.Mesh(
+      new THREE.BoxGeometry(0.16, 0.08, 0.08),
+      seedMaterial
+    );
+    seed.rotation.z = Math.PI / 5;
+    group.add(seed);
+    return group;
+  }
+
   return null;
 }
 
@@ -945,6 +1052,42 @@ scene.add(world);
 
 const blocks = new Map();
 const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const grassGeometry = new THREE.BufferGeometry();
+const grassVertices = [];
+const grassUvs = [];
+const grassNormals = [];
+
+for (const angle of [Math.PI / 4, -Math.PI / 4]) {
+  const c = Math.cos(angle) * 0.42;
+  const s = Math.sin(angle) * 0.42;
+  const corners = [
+    [-c, -0.5, -s],
+    [c, -0.5, s],
+    [c, 0.5, s],
+    [-c, 0.5, -s]
+  ];
+
+  for (const index of [0, 1, 2, 0, 2, 3]) {
+    const [x, y, z] = corners[index];
+    grassVertices.push(x, y, z);
+    grassUvs.push(index === 1 || index === 2 ? 1 : 0, index >= 2 ? 1 : 0);
+    grassNormals.push(0, 0, 1);
+  }
+}
+
+grassGeometry.setAttribute(
+  'position',
+  new THREE.Float32BufferAttribute(grassVertices, 3)
+);
+grassGeometry.setAttribute(
+  'uv',
+  new THREE.Float32BufferAttribute(grassUvs, 2)
+);
+grassGeometry.setAttribute(
+  'normal',
+  new THREE.Float32BufferAttribute(grassNormals, 3)
+);
+const wavingGrass = new Set();
 
 // CHUNK SYSTEM
 const CHUNK_SIZE = 8;
@@ -1212,6 +1355,11 @@ function drawToolIcon(type) {
     px(18, 34, 28, 14, '#6a6a6a');
     px(34, 12, 16, 20, '#333');
     px(38, 16, 8, 12, '#555');
+  } else if (type === 'seeds') {
+    px(10, 20, 14, 14, '#789b2d');
+    px(28, 10, 14, 14, '#5e8122');
+    px(38, 32, 14, 14, '#8da83a');
+    px(20, 40, 14, 14, '#46681c');
   } else {
     px(0, 0, 64, 64, '#777');
   }
@@ -1255,7 +1403,11 @@ function addBlock(x, y, z, type = 'stone', size = 1) {
   let geometry = cubeGeometry;
   let blockMaterial = materials[type] || materials.stone;
 
-  if (type === 'wood' && size < 1) {
+  if (type === 'grass_small' || type === 'grass_large') {
+    geometry = grassGeometry;
+    blockMaterial = grassMaterials[type];
+    size = type === 'grass_large' ? 0.8 : 0.45;
+  } else if (type === 'wood' && size < 1) {
     geometry = new THREE.CylinderGeometry(
       size / 2,
       size / 2,
@@ -1282,8 +1434,16 @@ function addBlock(x, y, z, type = 'stone', size = 1) {
   mesh.receiveShadow = false;
 
   mesh.userData = {
-    x, y, z, type, size
+    x, y, z, type, size,
+    grassPhase: Math.random() * Math.PI * 2,
+    grassHeight: type === 'grass_large' ? 1.15 : 0.7
   };
+
+  if (type === 'grass_small' || type === 'grass_large') {
+    mesh.scale.y = mesh.userData.grassHeight;
+    mesh.rotation.y = Math.random() * Math.PI;
+    wavingGrass.add(mesh);
+  }
 
   blocks.set(id, mesh);
 
@@ -1331,6 +1491,12 @@ function removeBlock(mesh) {
 
   if (p.size !== 1) {
     world.remove(mesh);
+    if (p.type === 'grass_small' || p.type === 'grass_large') {
+      wavingGrass.delete(mesh);
+    }
+    if (mesh.geometry !== cubeGeometry && mesh.geometry !== grassGeometry) {
+      mesh.geometry.dispose();
+    }
   } else {
     const chunkKey = getChunkKey(p.x, p.z);
     const localBlocks = chunkBlocks.get(chunkKey);
@@ -1394,6 +1560,8 @@ function forEachNearbyBlock(x, y, z, radiusX, radiusY, radiusZ, callback) {
 
 const WORLD_SIZE = 12;
 const MIN_WORLD_DEPTH = -14;
+const SPAWN_X = 0;
+const SPAWN_Z = 6;
 
 // The deepest layer currently generated.
 let generatedDepth = 0;
@@ -1473,13 +1641,23 @@ function generateWorld() {
     }
   }
 
-  // Forest generation.
-  for (let i = 0; i < 10; i++) {
+  // Forest generation with spacing and a protected spawn clearing.
+  const treePositions = [];
+  let attempts = 0;
 
-    const x = Math.floor(Math.random() * 23) - 11;
-    const z = Math.floor(Math.random() * 23) - 11;
+  while (treePositions.length < 14 && attempts < 200) {
+    attempts++;
 
-    if (Math.abs(x) < 4 && Math.abs(z) < 4) continue;
+    const x = Math.floor(Math.random() * (WORLD_SIZE * 2 - 2)) - WORLD_SIZE + 1;
+    const z = Math.floor(Math.random() * (WORLD_SIZE * 2 - 2)) - WORLD_SIZE + 1;
+
+    if (Math.hypot(x - SPAWN_X, z - SPAWN_Z) < 4.5) continue;
+    if (treePositions.some(([tx, tz]) => Math.hypot(x - tx, z - tz) < 3.5)) continue;
+
+    treePositions.push([x, z]);
+  }
+
+  treePositions.forEach(([x, z], i) => {
 
     const height = 3 + Math.floor(Math.random() * 2);
     const treeId = `tree_${i}_${x}_${z}`;
@@ -1513,12 +1691,28 @@ function generateWorld() {
       }
     }
 
+  });
+
+  for (let i = 0; i < 42; i++) {
+    const x = Math.floor(Math.random() * (WORLD_SIZE * 2 + 1)) - WORLD_SIZE;
+    const z = Math.floor(Math.random() * (WORLD_SIZE * 2 + 1)) - WORLD_SIZE;
+
+    if (Math.hypot(x - SPAWN_X, z - SPAWN_Z) < 3.5) continue;
+    if (blocks.has(key(x, 1, z))) continue;
+
+    addBlock(
+      x + (Math.random() - 0.5) * 0.35,
+      0.5,
+      z + (Math.random() - 0.5) * 0.35,
+      Math.random() < 0.62 ? 'grass_small' : 'grass_large'
+    );
   }
 
   endChunkBatch();
 }
 
 generateWorld();
+camera.position.set(SPAWN_X, 2.22, SPAWN_Z);
 
 function dropSelectedItem() {
   const slot = hotbarSlots[selected];
@@ -2189,6 +2383,7 @@ const inventory = {
   diamond: 0,
   wood: 0,
   leaves: 0,
+  seeds: 0,
   flint: 0,
   flintSteel: 0,
   planks: 0,
@@ -2505,6 +2700,13 @@ function destroyBlock(mesh) {
   const position = mesh.position.clone();
 
   removeBlock(mesh);
+
+  if (type === 'grass_small' || type === 'grass_large') {
+    if (Math.random() < 0.65) {
+      spawnDrop(position, 'seeds');
+    }
+    return;
+  }
 
   // Reveal the next underground layer.
   if (position.y <= generatedDepth && position.y > MIN_WORLD_DEPTH) {
@@ -3352,6 +3554,13 @@ function updateGravity(dt) {
 
   camera.position.y += velocityY * dt;
   onGround = false;
+
+  if (camera.position.y < MIN_WORLD_DEPTH - 8) {
+    camera.position.set(SPAWN_X, 2.22, SPAWN_Z);
+    velocityY = 0;
+    onGround = false;
+    toast('Returned to spawn.');
+  }
 }
 
 // ==========================================
@@ -3564,6 +3773,16 @@ function updateFlames(dt) {
   }
 }
 
+function updateGrass(now) {
+  const wind = Math.sin(now * 0.0018) * 0.08;
+
+  for (const grass of wavingGrass) {
+    const phase = grass.userData.grassPhase;
+    grass.rotation.x = Math.sin(now * 0.0024 + phase) * 0.08 + wind;
+    grass.rotation.z = Math.cos(now * 0.0017 + phase) * 0.05;
+  }
+}
+
 // ==========================================
 // GAME LOOP
 // ==========================================
@@ -3596,12 +3815,14 @@ function animate(now) {
   currentTargetHit = locked ? targeted() : null;
 
   updateHandAnimation(dt);
+  updateHandCollision(dt);
   updateMining(dt);
   updateBlockOutline();
 
   updateClouds(dt);
   updateDayNight(dt);
   updateFlames(dt);
+  updateGrass(now);
 
   renderer.render(scene, camera);
   flushChunkUpdates();
